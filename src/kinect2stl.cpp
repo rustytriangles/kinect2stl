@@ -47,6 +47,16 @@ Vertex compute_normal(const Triangle& tri) {
     return n;
 }
 
+float getDistanceAt(const unsigned short *depth,
+                    const int x, const int y,
+                    unsigned short minval, unsigned short maxval) {
+    const int width = 640;
+    const float num = 100.f;
+    const float scale = num / static_cast<float>(maxval - minval);
+    unsigned short raw = depth[y*width + x];
+    return static_cast<float>(maxval - raw) * scale;
+}
+
 int main(int argc, char* argv[]) {
 
     char* rgb = nullptr;
@@ -90,10 +100,10 @@ int main(int argc, char* argv[]) {
         for (int x = 0; x < width - 1; ++x) {
             const float x0 = static_cast<float>(x);
             const float x1 = x0 + 1.f;
-            const float v00 = static_cast<float>(depth[ y   *width + x]     - minval) * scale;
-            const float v10 = static_cast<float>(depth[ y   *width + x + 1] - minval) * scale;
-            const float v01 = static_cast<float>(depth[(y+1)*width + x]     - minval) * scale;
-            const float v11 = static_cast<float>(depth[(y+1)*width + x + 1] - minval) * scale;
+            const float v00 = getDistanceAt(depth, x  , y  , minval, maxval);
+            const float v10 = getDistanceAt(depth, x+1, y  , minval, maxval);
+            const float v01 = getDistanceAt(depth, x  , y+1, minval, maxval);
+            const float v11 = getDistanceAt(depth, x+1, y+1, minval, maxval);
 
             Triangle t0;
             t0.v0 = {x0, y0, v00};
@@ -116,8 +126,8 @@ int main(int argc, char* argv[]) {
         const float yf = static_cast<float>(yi);
         const float x0 = static_cast<float>(x);
         const float x1 = x0 + 1.f;
-        const float v0 = static_cast<float>(depth[yi*width + x] - minval) * scale;
-        const float v1 = static_cast<float>(depth[yi*width + x+1] - minval) * scale;
+        const float v0 = getDistanceAt(depth, x  , yi, minval, maxval);
+        const float v1 = getDistanceAt(depth, x+1, yi, minval, maxval);
 
         Triangle t0;
         t0.v0 = {x0, yf, back};
@@ -137,8 +147,8 @@ int main(int argc, char* argv[]) {
         const float xf = static_cast<float>(xi);
         const float y0 = static_cast<float>(y);
         const float y1 = y0 + 1.f;
-        const float v0 = static_cast<float>(depth[y*width + xi] - minval) * scale;
-        const float v1 = static_cast<float>(depth[(y+1)*width + xi] - minval) * scale;
+        const float v0 = getDistanceAt(depth, xi, y  , minval, maxval);
+        const float v1 = getDistanceAt(depth, xi, y+1, minval, maxval);
 
         Triangle t0;
         t0.v0 = {xf, y0, back};
@@ -158,8 +168,8 @@ int main(int argc, char* argv[]) {
         const float yf = static_cast<float>(yi);
         const float x0 = static_cast<float>(x);
         const float x1 = x0 - 1.f;
-        const float v0 = static_cast<float>(depth[yi*width + x] - minval) * scale;
-        const float v1 = static_cast<float>(depth[yi*width + x-1] - minval) * scale;
+        const float v0 = getDistanceAt(depth, x  , yi, minval, maxval);
+        const float v1 = getDistanceAt(depth, x-1, yi, minval, maxval);
 
         Triangle t0;
         t0.v0 = {x0, yf, back};
@@ -179,8 +189,8 @@ int main(int argc, char* argv[]) {
         const float xf = static_cast<float>(xi);
         const float y0 = static_cast<float>(y);
         const float y1 = y0 - 1.f;
-        const float v0 = static_cast<float>(depth[y*width + xi] - minval) * scale;
-        const float v1 = static_cast<float>(depth[(y-1)*width + xi] - minval) * scale;
+        const float v0 = getDistanceAt(depth, xi, y  , minval, maxval);
+        const float v1 = getDistanceAt(depth, xi, y-1, minval, maxval);
 
         Triangle t0;
         t0.v0 = {xf, y0, back};
