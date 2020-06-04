@@ -51,7 +51,7 @@ float getDistanceAt(const unsigned short *depth,
                     const int x, const int y,
                     unsigned short minval, unsigned short maxval) {
     const int width = 640;
-    const float num = 100.f;
+    const float num = 250.f;
     const float scale = num / static_cast<float>(maxval - minval);
     unsigned short raw = depth[y*width + x];
     return static_cast<float>(maxval - raw) * scale;
